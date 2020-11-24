@@ -44,7 +44,8 @@ def prepare(
 def create_dataset(
     x,
     y,
-    train=True,
+    train=False,
+    augmentation=False,
     shuffle_buffer_size=100,
     batch_size=64,
     show_augment_sample=False,
@@ -52,8 +53,15 @@ def create_dataset(
 ):
     ds = tf.data.Dataset.from_tensor_slices((x, y))
 
-    augment = data_augmentation()
+    if augmentation:
+        augment = data_augmentation()
+    else:
+        augment = None
+
     if show_augment_sample:
+        if augmentation is not True:
+            raise ValueError("augmentation must be true.")
+
         plt.figure(figsize=(10, 10))
         for i in range(16):
             augmented_image = augment(x[:1])
@@ -61,6 +69,7 @@ def create_dataset(
             plt.imshow(augmented_image[0], cmap="gray")
             plt.axis("off")
         plt.suptitle("augment images.")
+        plt.tight_layout()
         plt.show()
 
     if show_sample:
